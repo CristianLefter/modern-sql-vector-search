@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    container_name: mssql2025
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-P@ssw0rd_ChangeMe!}
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${MSSQL_SA_PASSWORD:-P@ssw0rd_ChangeMe!}", "-Q", "SELECT 1", "-C", "-No"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - db_data:/var/opt/mssql
+
+  app:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu
+    container_name: devcontainer
+    volumes:
+      - ..:/workspaces/${localWorkspaceFolderBasename}:cached
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-P@ssw0rd_ChangeMe!}
+    # Enable Docker-in-Docker if needed (Codespaces supports docker socket)
+    # Note: Codespaces will provide the Docker host; this is a simple app container.
+
+volumes:
+  db_data:
