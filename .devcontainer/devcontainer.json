@@ -1,0 +1,32 @@
+{
+  "name": "Modern SQL: Vector Search",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "features": {},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-mssql.mssql",
+        "ms-azuretools.vscode-docker",
+        "ms-python.python"
+      ],
+      "settings": {
+        "mssql.connections": [
+          {
+            "server": "db,1433",
+            "database": "master",
+            "authenticationType": "SqlLogin",
+            "user": "sa",
+            "password": "${env:MSSQL_SA_PASSWORD}",
+            "encrypt": "Optional"
+          }
+        ]
+      }
+    }
+  },
+  "postCreateCommand": "bash -lc 'echo Dev container ready. Use the MSSQL extension to connect to the db service.'",
+  "remoteEnv": {
+    "MSSQL_SA_PASSWORD": "P@ssw0rd_ChangeMe!"
+  }
+}
